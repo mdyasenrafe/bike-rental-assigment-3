@@ -1,5 +1,6 @@
 import cors from "cors";
 import express, { Application } from "express";
+import { globalErrorHandler } from "./app/utils/globalErrorHandler";
 
 const app: Application = express();
 
@@ -10,5 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.use(globalErrorHandler);
 
 export default app;
