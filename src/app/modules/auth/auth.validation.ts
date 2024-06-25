@@ -14,7 +14,14 @@ const userSignupSchema = z.object({
     message: "Role must be either 'admin' or 'user'",
   }),
 });
+const userSigninSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" }),
+});
 
 export const AuthValidations = {
   userSignupSchema,
+  userSigninSchema,
 };
