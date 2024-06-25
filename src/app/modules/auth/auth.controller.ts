@@ -13,10 +13,11 @@ const register = catchAsync(async (req: Request, res: Response) => {
 
 const signin = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const { data } = await AuthServices.signinUser(email, password);
+  const { data, token } = await AuthServices.signinUser(email, password);
   sendResponse(res, {
     data: data,
-    message: "User registered successfully",
+    token,
+    message: "User logged in successfully",
   });
 });
 

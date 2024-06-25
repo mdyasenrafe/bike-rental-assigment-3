@@ -3,6 +3,7 @@ import { AppError } from "../../errors/appError";
 import { TUser } from "../user/user.interface";
 import { UserModel } from "../user/user.model";
 import bcrypt from "bcrypt";
+import { generateToken } from "../../utils/generateToken";
 
 const createUserIntoDB = async (payload: TUser) => {
   const result = await UserModel.create(payload);
@@ -18,7 +19,8 @@ const signinUser = async (email: string, password: string) => {
   if (!isMatch) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
   }
-  return { data: user };
+  const token = generateToken(user._id, user.email);
+  return { data: user, token };
 };
 export const AuthServices = {
   createUserIntoDB,
