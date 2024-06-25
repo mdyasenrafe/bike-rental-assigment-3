@@ -8,7 +8,7 @@
     "strict": true
   },
   "include": [
-    "src/**/*.ts", // adjust this as needed for your source files
+    "src/**/*.ts", 
     "src/server.ts"
   ],
   "exclude": ["node_modules"]
