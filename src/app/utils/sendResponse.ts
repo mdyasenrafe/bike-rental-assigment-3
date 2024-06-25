@@ -7,7 +7,7 @@ type TResponse<T> = {
 };
 
 export const sendResponse = <T>(res: Response, data: TResponse<T>) => {
-  res.send(httpStatus.OK).json({
+  res.status(httpStatus.OK).json({
     success: true,
     statusCode: httpStatus.OK,
     message: data.message,
