@@ -24,4 +24,4 @@ router.get(
   RentalControllers.getUserRentals
 );
 
-export const RentalRoute = router;
+export const RentalRoutes = router;
