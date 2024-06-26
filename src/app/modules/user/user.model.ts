@@ -4,7 +4,7 @@ import config from "../../config";
 import bcrypt from "bcrypt";
 import { UserRolesArray } from "./user.constant";
 
-const UserSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser>(
   {
     name: {
       type: String,
@@ -38,15 +38,15 @@ const UserSchema = new Schema<TUser>(
   }
 );
 
-UserSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   const user = this;
   user.password = await bcrypt.hash(user.password, 12);
   next();
 });
 
-UserSchema.post("save", function (doc, next) {
+userSchema.post("save", function (doc, next) {
   doc.password = "";
   next();
 });
 
-export const UserModel = model<TUser>("user", UserSchema);
+export const UserModel = model<TUser>("user", userSchema);
