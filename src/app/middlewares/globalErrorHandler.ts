@@ -12,5 +12,6 @@ export const globalErrorHandler = (
     success: false,
     statusCode: statusCode,
     message,
+    err,
   });
 };

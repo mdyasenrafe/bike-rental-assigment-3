@@ -2,9 +2,12 @@ import { z } from "zod";
 
 const rentalCreateSchema = z.object({
   bikeId: z.string().min(1, "Bike ID is required"),
-  startTime: z.date().refine((date) => date > new Date(), {
-    message: "Start time must be in the future",
-  }),
+  startTime: z
+    .string()
+    .transform((dateString) => new Date(dateString))
+    .refine((date) => date <= new Date(), {
+      message: "Start time must be a valid past or current date",
+    }),
 });
 
 export const RentalValidations = {
