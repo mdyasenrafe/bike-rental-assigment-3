@@ -17,16 +17,25 @@ export const authenticateToken = (...requiredRoles: TUserRoles[]) => {
       ) as JwtPayload;
       const { role, userId } = decoded;
       if (requiredRoles && !requiredRoles.includes(role)) {
-        throw new AppError(httpStatus.UNAUTHORIZED, "You are not unauthorized");
+        throw new AppError(
+          httpStatus.UNAUTHORIZED,
+          "You have no access to this route"
+        );
       }
       const user = await UserModel.findById(userId);
 
       req.user = decoded as JwtPayload;
       if (!user) {
-        throw new AppError(httpStatus.NOT_FOUND, "This user is not found!");
+        throw new AppError(
+          httpStatus.NOT_FOUND,
+          "User not found: The user associated with this token could not be found."
+        );
       }
     } else {
-      throw new AppError(httpStatus.UNAUTHORIZED, "You are not unauthorized");
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        "Authentication failed: No token provided."
+      );
     }
     next();
   });
