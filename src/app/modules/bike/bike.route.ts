@@ -27,7 +27,7 @@ router.delete(
   "/:id",
   authenticateToken(UserRolesObject.admin),
   validateRequest(BIkeValidations.bikeUpdateSchema),
-  BikeControllers.updateBike
+  BikeControllers.deleteBike
 );
 
 export const bikeRoutes = router;

@@ -4,7 +4,7 @@ const bikeCreateSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   pricePerHour: z.number().min(0, "Price per hour must be positive"),
-  isAvailable: z.boolean(),
+  isAvailable: z.boolean().default(true),
   cc: z.number().min(50, "CC must be at least 50"),
   year: z.number().min(1990, "Year must be no earlier than 1990"),
   model: z.string().min(1, "Model is required"),
