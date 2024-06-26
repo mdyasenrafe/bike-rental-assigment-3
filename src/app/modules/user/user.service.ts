@@ -5,12 +5,12 @@ import { JwtPayload } from "jsonwebtoken";
 import { AppError } from "../../errors/appError";
 import httpStatus from "http-status";
 
-export const getUserFromDB = async (id: Types.ObjectId) => {
+const getUserFromDB = async (id: Types.ObjectId) => {
   const result = await UserModel.findById(id);
   return result;
 };
 
-export const updateUserIntoDB = async (
+const updateUserIntoDB = async (
   currentUser: JwtPayload,
   payload: Partial<TUser>
 ) => {
@@ -26,4 +26,9 @@ export const updateUserIntoDB = async (
     runValidators: true,
   });
   return result;
+};
+
+export const Userservices = {
+  getUserFromDB,
+  updateUserIntoDB,
 };
