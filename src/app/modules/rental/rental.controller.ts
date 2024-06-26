@@ -15,12 +15,11 @@ const createRental = catchAsync(async (req, res) => {
 });
 
 const ReturnBike = catchAsync(async (req, res) => {
-  const { id } = req.user;
-  console.log("id ReturnBike", id);
+  const { id } = req.params;
   const result = await RentalServices.returnBikeToDB(id);
   sendResponse(res, {
     data: result,
-    message: "Rental created successfully",
+    message: "Bike returned successfully",
   });
 });
 

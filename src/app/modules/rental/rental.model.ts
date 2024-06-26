@@ -5,12 +5,12 @@ const rentalSchema = new Schema<TRental>(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
     bikeId: {
       type: Schema.Types.ObjectId,
-      ref: "Bike",
+      ref: "bike",
       required: true,
     },
     startTime: {
@@ -18,7 +18,7 @@ const rentalSchema = new Schema<TRental>(
       required: true,
     },
     returnTime: { type: Date },
-    totalCost: { type: Number },
+    totalCost: { type: Number, default: 0 },
     isReturned: {
       type: Boolean,
       default: false,
