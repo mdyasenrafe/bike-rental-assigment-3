@@ -13,13 +13,11 @@ router.post(
   validateRequest(BIkeValidations.bikeCreateSchema),
   BikeControllers.createBike
 );
-
 router.get(
   "/",
   authenticateToken(UserRolesObject.admin, UserRolesObject.user),
   BikeControllers.getAllBikes
 );
-
 router.put(
   "/:id",
   authenticateToken(UserRolesObject.admin),
