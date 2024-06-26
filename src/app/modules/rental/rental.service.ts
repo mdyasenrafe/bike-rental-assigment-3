@@ -44,6 +44,7 @@ const returnBikeToDB = async (id: string) => {
   // update rental model
   // update bike
   const date = new Date();
+  console.log(date);
 };
 
 const getRentalsByUserFRomDb = async (userId: string) => {
