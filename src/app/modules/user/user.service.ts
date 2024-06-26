@@ -14,14 +14,14 @@ const updateUserIntoDB = async (
   currentUser: JwtPayload,
   payload: Partial<TUser>
 ) => {
-  const { id, role } = currentUser;
+  const { userId, role } = currentUser;
   if ("role" in payload && role !== "admin") {
     throw new AppError(
       httpStatus.UNAUTHORIZED,
       "Unauthorized role change attempt: Only users with the admin role can change user roles. Please remove the role field from the request body if you wish to proceed."
     );
   }
-  const result = await UserModel.findByIdAndUpdate(id, payload, {
+  const result = await UserModel.findByIdAndUpdate(userId, payload, {
     new: true,
     runValidators: true,
   });
