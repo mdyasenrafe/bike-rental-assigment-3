@@ -26,6 +26,7 @@ router.put(
 router.delete(
   "/:id",
   authenticateToken(UserRolesObject.admin),
+  validateRequest(BIkeValidations.bikeUpdateSchema),
   BikeControllers.updateBike
 );
 
