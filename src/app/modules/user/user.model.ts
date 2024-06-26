@@ -1,6 +1,5 @@
 import { Schema, model } from "mongoose";
 import { TUser } from "./user.interface";
-import config from "../../config";
 import bcrypt from "bcrypt";
 import { UserRolesArray } from "./user.constant";
 
