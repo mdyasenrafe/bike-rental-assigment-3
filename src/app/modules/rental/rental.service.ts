@@ -6,6 +6,7 @@ import { RentalModel } from "./rental.model";
 import mongoose, { Types } from "mongoose";
 
 const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
+  console.log("userId createRentalIntoDB", userId);
   payload["userId"] = userId;
   const session = await mongoose.startSession();
   try {
@@ -15,7 +16,7 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
     if (!bike || !bike.isAvailable) {
       throw new AppError(httpStatus.NOT_FOUND, "Bike is not available");
     }
-    const result = await RentalModel.create(payload, { session });
+    const result = await RentalModel.create([payload], { session });
 
     const updateBIkeAvailable = await BikeModel.findOneAndUpdate(
       { _id: bikeId },
@@ -30,9 +31,12 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
     session.commitTransaction();
     return result;
   } catch (error: any) {
-    session.abortTransaction();
-    session.endSession();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     throw new AppError(httpStatus.BAD_REQUEST, error);
+  } finally {
+    session.endSession();
   }
 };
 const returnBikeToDB = async (id: string) => {

@@ -4,7 +4,10 @@ import { RentalServices } from "./rental.service";
 
 const createRental = catchAsync(async (req, res) => {
   const user = req.user;
-  const result = await RentalServices.createRentalIntoDB(user?.id, req.body);
+  const result = await RentalServices.createRentalIntoDB(
+    user?.userId,
+    req.body
+  );
   sendResponse(res, {
     data: result,
     message: "Rental created successfully",
@@ -13,6 +16,7 @@ const createRental = catchAsync(async (req, res) => {
 
 const ReturnBike = catchAsync(async (req, res) => {
   const { id } = req.user;
+  console.log("id ReturnBike", id);
   const result = await RentalServices.returnBikeToDB(id);
   sendResponse(res, {
     data: result,
@@ -22,10 +26,10 @@ const ReturnBike = catchAsync(async (req, res) => {
 
 const getUserRentals = catchAsync(async (req, res) => {
   const user = req.user;
-  const result = await RentalServices.getRentalsByUserFRomDb(user?.id);
+  const result = await RentalServices.getRentalsByUserFRomDb(user?.userId);
   sendResponse(res, {
     data: result,
-    message: "Rental created successfully",
+    message: "Rentals retrieved successfully",
   });
 });
 
