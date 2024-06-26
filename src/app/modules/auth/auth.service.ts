@@ -11,7 +11,7 @@ const createUserIntoDB = async (payload: TUser) => {
 };
 
 const signinUser = async (email: string, password: string) => {
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).select("+password");
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -19,7 +19,7 @@ const signinUser = async (email: string, password: string) => {
   if (!isMatch) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
   }
-  const token = generateToken(user._id, user.email);
+  const token = generateToken(user._id, user.role);
   return { data: user, token };
 };
 export const AuthServices = {

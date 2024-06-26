@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import { TUser } from "./user.interface";
 import config from "../../config";
 import bcrypt from "bcrypt";
+import { UserRolesArray } from "./user.constant";
 
 const UserSchema = new Schema<TUser>(
   {
@@ -17,6 +18,7 @@ const UserSchema = new Schema<TUser>(
     password: {
       type: String,
       required: true,
+      select: 0,
     },
     phone: {
       type: String,
@@ -28,7 +30,7 @@ const UserSchema = new Schema<TUser>(
     },
     role: {
       type: String,
-      enum: ["admin", "user"],
+      enum: UserRolesArray,
     },
   },
   {
