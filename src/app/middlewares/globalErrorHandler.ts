@@ -1,4 +1,8 @@
 import { NextFunction, Request, Response } from "express";
+import { TErrorSources } from "../types/error";
+import { ZodError } from "zod";
+import { handleZodError } from "../errors/handleZodError";
+import { handleValidationError } from "../errors/handleValidationError";
 
 export const globalErrorHandler = (
   err: any,
@@ -8,10 +12,28 @@ export const globalErrorHandler = (
 ) => {
   let statusCode = err.statusCode || 400;
   let message = err.message || "Something went wrong!";
+  let errorSources: TErrorSources = [
+    {
+      path: "",
+      message: "Something went wrong",
+    },
+  ];
+  if (err instanceof ZodError) {
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err?.name === "ValidationError") {
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  }
   res.status(statusCode).json({
     success: false,
     statusCode: statusCode,
     message,
-    err,
+    errorMessages: errorSources,
+    stack: err?.stack,
   });
 };
