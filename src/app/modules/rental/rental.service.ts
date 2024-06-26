@@ -104,6 +104,8 @@ const returnBikeToDB = async (id: string) => {
       { _id: result?.bikeId },
       {
         isAvailable: true,
+      },
+      {
         session,
       }
     );
