@@ -48,6 +48,9 @@ const returnBikeToDB = async (id: string) => {
 
 const getRentalsByUserFRomDb = async (userId: string) => {
   const result = await RentalModel.find({ userId: userId });
+  if (result.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No Data Found");
+  }
   return result;
 };
 
