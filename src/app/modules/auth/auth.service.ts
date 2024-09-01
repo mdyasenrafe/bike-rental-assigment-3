@@ -6,6 +6,13 @@ import bcrypt from "bcrypt";
 import { generateToken } from "../../utils/generateToken";
 
 const createUserIntoDB = async (payload: TUser) => {
+  if (payload.role === "admin") {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not authorized to create an admin user"
+    );
+  }
+
   const result = await UserModel.create(payload);
   return result;
 };
