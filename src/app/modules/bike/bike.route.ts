@@ -29,9 +29,9 @@ router.get(
 
     next();
   },
-  authenticateToken(UserRolesObject.admin, UserRolesObject.user),
   BikeControllers.getAllBikes
 );
+router.get("/bike-models", BikeControllers.getAllBikeModels);
 router.put(
   "/:id",
   authenticateToken(UserRolesObject.admin),

@@ -33,9 +33,19 @@ const deleteBike = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+const getAllBikeModels = catchAsync(async (req, res) => {
+  const bikeModels = await BikeServices.getBikeModelsFromDB();
+  sendResponse(res, {
+    message: "Bike models retrieved successfully",
+    data: bikeModels,
+  });
+});
+
 export const BikeControllers = {
   createBike,
   getAllBikes,
   updateBike,
   deleteBike,
+  getAllBikeModels,
 };
