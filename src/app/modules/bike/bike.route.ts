@@ -31,6 +31,7 @@ router.get(
   },
   BikeControllers.getAllBikes
 );
+router.get("/:id", BikeControllers.getBikeById);
 router.get("/bike-models", BikeControllers.getAllBikeModels);
 router.put(
   "/:id",

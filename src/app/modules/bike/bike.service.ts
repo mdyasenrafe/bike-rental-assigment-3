@@ -27,6 +27,9 @@ const getAllBikesFromDB = async (query: Record<string, unknown>) => {
     result,
   };
 };
+const getBikeByIdFromDB = async (id: string) => {
+  return await BikeModel.findById(id);
+};
 
 const updateBikeIntoDB = async (id: string, payload: Partial<TBike>) => {
   const bike = await BikeModel.findById(id);
@@ -71,4 +74,5 @@ export const BikeServices = {
   updateBikeIntoDB,
   deleteBikeFromDB,
   getBikeModelsFromDB,
+  getBikeByIdFromDB,
 };
