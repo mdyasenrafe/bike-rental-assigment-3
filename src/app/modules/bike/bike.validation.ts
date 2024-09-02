@@ -9,6 +9,7 @@ const bikeCreateSchema = z.object({
   year: z.number().min(1990, "Year must be no earlier than 1990"),
   model: z.string().min(1, "Model is required"),
   brand: z.string().min(1, "Brand is required"),
+  thumb: z.string().min(1, "Thumb URL is required"),
 });
 const bikeUpdateSchema = z.object({
   name: z.string().min(1, "Name is required").optional(),
@@ -19,6 +20,7 @@ const bikeUpdateSchema = z.object({
   year: z.number().min(1990, "Year must be no earlier than 1990").optional(),
   model: z.string().min(1, "Model is required").optional(),
   brand: z.string().min(1, "Brand is required").optional(),
+  thumb: z.string().min(1, "Thumb URL is required").optional(),
 });
 
 export const BIkeValidations = {

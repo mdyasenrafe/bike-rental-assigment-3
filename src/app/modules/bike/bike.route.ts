@@ -15,6 +15,20 @@ router.post(
 );
 router.get(
   "/",
+  (req, res, next) => {
+    const price: any = req.query.price;
+    console.log("Received query parameters:", req.query);
+    if (price) {
+      if (price["gte"] && isNaN(Number(price["gte"]))) {
+        return res.status(400).send({ error: "Invalid price[gte] value" });
+      }
+      if (price["lte"] && isNaN(Number(price["lte"]))) {
+        return res.status(400).send({ error: "Invalid price[lte] value" });
+      }
+    }
+
+    next();
+  },
   authenticateToken(UserRolesObject.admin, UserRolesObject.user),
   BikeControllers.getAllBikes
 );

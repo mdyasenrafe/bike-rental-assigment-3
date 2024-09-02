@@ -3,21 +3,29 @@ import { TBike } from "./bike.interface";
 import { BikeModel } from "./bike.model";
 import { AppError } from "../../errors/appError";
 import httpStatus from "http-status";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createBikeIntoDB = async (payload: TBike) => {
   const result = await BikeModel.create(payload);
   return result;
 };
 
-const getAllBikesFromDB = async () => {
-  const result = await BikeModel.find();
-  if (result.length === 0) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No bikes found: The database does not contain any bikes."
-    );
-  }
-  return result;
+const getAllBikesFromDB = async (query: Record<string, unknown>) => {
+  const searchableFields = ["name"];
+  const academicDepartmentQuery = new QueryBuilder(BikeModel.find(), query)
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await academicDepartmentQuery.modelQuery;
+  const meta = await academicDepartmentQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const updateBikeIntoDB = async (id: string, payload: Partial<TBike>) => {

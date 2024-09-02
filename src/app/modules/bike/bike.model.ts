@@ -31,6 +31,14 @@ const bikeSchema = new Schema<TBike>(
       type: String,
       required: true,
     },
+    thumb: {
+      type: String,
+      required: true,
+    },
+    year: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,

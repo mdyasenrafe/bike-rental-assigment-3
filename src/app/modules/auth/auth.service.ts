@@ -30,6 +30,7 @@ const signinUser = async (email: string, password: string) => {
   const token = generateToken(user._id, user.role);
   return { data: user, token };
 };
+
 export const AuthServices = {
   createUserIntoDB,
   signinUser,
