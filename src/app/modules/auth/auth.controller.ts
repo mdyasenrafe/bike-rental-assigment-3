@@ -4,9 +4,10 @@ import { sendResponse } from "../../utils/sendResponse";
 import { AuthServices } from "./auth.service";
 
 const register = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthServices.createUserIntoDB(req.body);
+  const { data, token } = await AuthServices.createUserIntoDB(req.body);
   sendResponse(res, {
-    data: result,
+    data: data,
+    token,
     message: "User registered successfully",
   });
 });

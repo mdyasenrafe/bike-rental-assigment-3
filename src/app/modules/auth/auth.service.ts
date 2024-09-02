@@ -14,7 +14,8 @@ const createUserIntoDB = async (payload: TUser) => {
   }
 
   const result = await UserModel.create(payload);
-  return result;
+  const token = generateToken(result._id, result.role);
+  return { data: result, token };
 };
 
 const signinUser = async (email: string, password: string) => {
