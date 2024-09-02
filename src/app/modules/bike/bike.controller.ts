@@ -10,10 +10,11 @@ const createBike = catchAsync(async (req, res) => {
   });
 });
 const getAllBikes = catchAsync(async (req, res) => {
-  const result = await BikeServices.getAllBikesFromDB(req.query);
+  const { result, meta } = await BikeServices.getAllBikesFromDB(req.query);
   sendResponse(res, {
     message: "Bikes retrieved successfully",
     data: result,
+    meta: meta,
   });
 });
 const updateBike = catchAsync(async (req, res) => {
