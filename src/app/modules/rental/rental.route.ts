@@ -4,6 +4,7 @@ import { UserRolesObject } from "../user/user.constant";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { RentalValidations } from "./rental.validation";
 import { RentalControllers, handleStripeWebhook } from "./rental.controller";
+import bodyParser from "body-parser";
 
 const router = express.Router();
 
@@ -24,6 +25,10 @@ router.get(
   RentalControllers.getUserRentals
 );
 
-router.post("/webhooks/stripe", handleStripeWebhook);
+router.post(
+  "/webhooks/stripe",
+  bodyParser.raw({ type: "application/json" }),
+  handleStripeWebhook
+);
 
 export const RentalRoutes = router;
