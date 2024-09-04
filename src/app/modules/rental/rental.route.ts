@@ -24,10 +24,6 @@ router.get(
   RentalControllers.getUserRentals
 );
 
-router.post(
-  "/webhooks/stripe",
-  express.raw({ type: "application/json" }),
-  handleStripeWebhook
-);
+router.post("/webhooks/stripe", handleStripeWebhook);
 
 export const RentalRoutes = router;
