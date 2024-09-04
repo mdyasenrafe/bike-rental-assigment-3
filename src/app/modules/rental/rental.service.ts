@@ -25,7 +25,7 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
 
     // Create a PaymentIntent for the total rental cost
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 100,
+      amount: 100 * 100,
       currency: "bdt",
       payment_method_types: ["card"],
     });
