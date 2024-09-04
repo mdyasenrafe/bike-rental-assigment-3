@@ -9,7 +9,8 @@ const createRental = catchAsync(async (req, res) => {
     req.body
   );
   sendResponse(res, {
-    data: result,
+    data: result?.rental,
+    clientSecret: result?.clientSecret as string,
     message: "Rental created successfully",
   });
 });

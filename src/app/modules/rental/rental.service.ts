@@ -5,6 +5,7 @@ import { TRental } from "./rental.interace";
 import { RentalModel } from "./rental.model";
 import mongoose, { Types } from "mongoose";
 import { TBike } from "../bike/bike.interface";
+import { stripe } from "../../config";
 
 const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
   payload["userId"] = userId;
@@ -22,22 +23,30 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
       throw new AppError(httpStatus.NOT_FOUND, "Bike is not available");
     }
 
-    const result = await RentalModel.create([payload], { session });
-    if (!result) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Failed to create rental record"
-      );
-    }
+    // Create a PaymentIntent for the total rental cost
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 1,
+      currency: "usd",
+      payment_method_types: ["card"],
+    });
+
+    // Create rental record in the database with paymentIntentId
+    const rentalResult = await RentalModel.create(
+      [
+        {
+          ...payload,
+          paymentIntentId: paymentIntent.id,
+          paymentStatus: "pending",
+        },
+      ],
+      { session }
+    );
+
+    // Update bike availability
     const updateBikeAvailable = await BikeModel.findOneAndUpdate(
       { _id: bikeId },
-      {
-        isAvailable: false,
-      },
-      {
-        new: true,
-        session,
-      }
+      { isAvailable: false },
+      { new: true, session }
     );
     if (!updateBikeAvailable) {
       throw new AppError(
@@ -45,15 +54,21 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
         "Unable to update: The bike with the specified ID does not exist or cannot be updated."
       );
     }
+
     await session.commitTransaction();
     await session.endSession();
-    return result;
+
+    return {
+      rental: rentalResult,
+      clientSecret: paymentIntent.client_secret,
+    };
   } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
     throw new AppError(httpStatus.BAD_REQUEST, error);
   }
 };
+
 const returnBikeToDB = async (id: string) => {
   const session = await mongoose.startSession();
   try {
