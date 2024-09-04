@@ -7,4 +7,11 @@ export type TRental = {
   returnTime: Date;
   totalCost: number;
   isReturned: boolean;
+  status: "booked" | "returned" | "completed";
+  paymentStatus: "pending" | "paid" | "failed";
 };
+
+export interface TRentalStatusUpdate {
+  paymentIntentId: string;
+  status: "succeeded" | "failed";
+}

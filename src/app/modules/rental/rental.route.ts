@@ -3,7 +3,7 @@ import { authenticateToken } from "../../middlewares/authMiddleware";
 import { UserRolesObject } from "../user/user.constant";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { RentalValidations } from "./rental.validation";
-import { RentalControllers } from "./rental.controller";
+import { RentalControllers, handleStripeWebhook } from "./rental.controller";
 
 const router = express.Router();
 
@@ -22,6 +22,12 @@ router.get(
   "/",
   authenticateToken(UserRolesObject.admin, UserRolesObject.user),
   RentalControllers.getUserRentals
+);
+
+router.post(
+  "/webhooks/stripe",
+  express.raw({ type: "application/json" }),
+  handleStripeWebhook
 );
 
 export const RentalRoutes = router;

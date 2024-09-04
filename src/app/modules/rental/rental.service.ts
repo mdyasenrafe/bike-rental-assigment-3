@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import { AppError } from "../../errors/appError";
 import { BikeModel } from "../bike/bike.model";
-import { TRental } from "./rental.interace";
+import { TRental, TRentalStatusUpdate } from "./rental.interace";
 import { RentalModel } from "./rental.model";
 import mongoose, { Types } from "mongoose";
 import { TBike } from "../bike/bike.interface";
@@ -150,8 +150,51 @@ const getRentalsByUserFRomDb = async (userId: string) => {
   return result;
 };
 
+export const updateRentalPaymentStatus = async ({
+  paymentIntentId,
+  status,
+}: TRentalStatusUpdate) => {
+  const rental = await RentalModel.findOneAndUpdate(
+    { paymentIntentId },
+    { paymentStatus: status === "succeeded" ? "paid" : "failed" },
+    { new: true }
+  );
+
+  if (!rental) {
+    throw new AppError(httpStatus.NOT_FOUND, "No Data Found");
+  }
+
+  if (status === "failed") {
+    const bikeUpdate = await BikeModel.findByIdAndUpdate(
+      rental.bikeId,
+      { isAvailable: true },
+      { new: true }
+    );
+
+    if (!bikeUpdate) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Failed to update bike availability"
+      );
+    }
+  }
+
+  return rental;
+};
+
+export const verifyStripeWebhookSignature = (req: any) => {
+  const sig = req.headers["stripe-signature"] as string;
+  const event = stripe.webhooks.constructEvent(
+    req.body,
+    sig,
+    process.env.STRIPE_WEBHOOK_SECRET!
+  );
+  return event;
+};
+
 export const RentalServices = {
   createRentalIntoDB,
   returnBikeToDB,
   getRentalsByUserFRomDb,
+  verifyStripeWebhookSignature,
 };

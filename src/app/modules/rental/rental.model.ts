@@ -23,6 +23,16 @@ const rentalSchema = new Schema<TRental>(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ["booked", "returned"],
+      default: "booked",
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,
