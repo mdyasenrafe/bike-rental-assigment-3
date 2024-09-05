@@ -1,6 +1,6 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { RentalServices, updateRentalPaymentStatus } from "./rental.service";
+import { RentalServices } from "./rental.service";
 
 const createRental = catchAsync(async (req, res) => {
   const user = req.user;
