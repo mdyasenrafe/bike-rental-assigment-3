@@ -25,8 +25,10 @@ const ReturnBike = catchAsync(async (req, res) => {
 });
 
 const getUserRentals = catchAsync(async (req, res) => {
+  const userId = req?.user?.userId;
   const { result, meta } = await RentalServices.getRentalsByUserFRomDb(
-    req?.query
+    req?.query,
+    userId
   );
   sendResponse(res, {
     data: result,

@@ -143,15 +143,21 @@ const returnBikeToDB = async (id: string) => {
   }
 };
 
-const getRentalsByUserFRomDb = async (query: Record<string, unknown>) => {
-  const academicDepartmentQuery = new QueryBuilder(RentalModel.find(), query)
+const getRentalsByUserFRomDb = async (
+  query: Record<string, unknown>,
+  userId: string
+) => {
+  const rentalsQuery = new QueryBuilder(
+    RentalModel.find({ userId: userId }),
+    query
+  )
     .filter()
     .sort()
     .paginate()
     .fields();
 
-  const result = await academicDepartmentQuery.modelQuery;
-  const meta = await academicDepartmentQuery.countTotal();
+  const result = await rentalsQuery.modelQuery;
+  const meta = await rentalsQuery.countTotal();
 
   return {
     meta,
