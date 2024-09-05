@@ -6,6 +6,7 @@ import { RentalModel } from "./rental.model";
 import mongoose, { Types } from "mongoose";
 import { TBike } from "../bike/bike.interface";
 import { stripe } from "../../config";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
   payload["userId"] = userId;
@@ -142,12 +143,20 @@ const returnBikeToDB = async (id: string) => {
   }
 };
 
-const getRentalsByUserFRomDb = async (userId: string) => {
-  const result = await RentalModel.find({ userId: userId });
-  if (result.length === 0) {
-    throw new AppError(httpStatus.NOT_FOUND, "No Data Found");
-  }
-  return result;
+const getRentalsByUserFRomDb = async (query: Record<string, unknown>) => {
+  const academicDepartmentQuery = new QueryBuilder(RentalModel.find(), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await academicDepartmentQuery.modelQuery;
+  const meta = await academicDepartmentQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const updateRentalPaymentStatus = async ({

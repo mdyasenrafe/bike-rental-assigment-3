@@ -25,10 +25,12 @@ const ReturnBike = catchAsync(async (req, res) => {
 });
 
 const getUserRentals = catchAsync(async (req, res) => {
-  const user = req.user;
-  const result = await RentalServices.getRentalsByUserFRomDb(user?.userId);
+  const { result, meta } = await RentalServices.getRentalsByUserFRomDb(
+    req?.query
+  );
   sendResponse(res, {
     data: result,
+    meta: meta,
     message: "Rentals retrieved successfully",
   });
 });
