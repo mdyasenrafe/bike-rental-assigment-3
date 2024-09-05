@@ -148,7 +148,7 @@ const getRentalsByUserFRomDb = async (
   userId: string
 ) => {
   const rentalsQuery = new QueryBuilder(
-    RentalModel.find({ userId: userId }),
+    RentalModel.find({ userId: userId }).populate("userId").populate("bikeId"),
     query
   )
     .filter()
