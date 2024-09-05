@@ -150,7 +150,7 @@ const getRentalsByUserFRomDb = async (userId: string) => {
   return result;
 };
 
-export const updateRentalPaymentStatus = async ({
+const updateRentalPaymentStatus = async ({
   paymentIntentId,
   status,
 }: TRentalStatusUpdate) => {
@@ -186,4 +186,5 @@ export const RentalServices = {
   createRentalIntoDB,
   returnBikeToDB,
   getRentalsByUserFRomDb,
+  updateRentalPaymentStatus,
 };

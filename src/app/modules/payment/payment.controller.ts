@@ -1,6 +1,6 @@
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
-import { updateRentalPaymentStatus } from "../rental/rental.service";
+import { RentalServices } from "../rental/rental.service";
 import { PaymentServices } from "./paymentServices";
 
 export const handleStripeWebhook = catchAsync(async (req, res) => {
@@ -9,7 +9,7 @@ export const handleStripeWebhook = catchAsync(async (req, res) => {
   switch (event.type) {
     case "payment_intent.succeeded": {
       const paymentIntent = event.data.object;
-      await updateRentalPaymentStatus({
+      await RentalServices.updateRentalPaymentStatus({
         paymentIntentId: paymentIntent.id,
         status: "succeeded",
       });
@@ -18,7 +18,7 @@ export const handleStripeWebhook = catchAsync(async (req, res) => {
 
     case "payment_intent.payment_failed": {
       const paymentIntent = event.data.object;
-      await updateRentalPaymentStatus({
+      await RentalServices.updateRentalPaymentStatus({
         paymentIntentId: paymentIntent.id,
         status: "failed",
       });
