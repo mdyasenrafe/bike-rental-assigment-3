@@ -24,6 +24,9 @@ const rentalSchema = new Schema<TRental>(
       type: Boolean,
       default: false,
     },
+    paymentIntentId: {
+      type: String,
+    },
     status: {
       type: String,
       enum: RentalStatuses,

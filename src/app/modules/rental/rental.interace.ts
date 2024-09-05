@@ -7,6 +7,7 @@ export type TRental = {
   returnTime: Date;
   totalCost: number;
   isReturned: boolean;
+  paymentIntentId: string;
   status: "booked" | "returned" | "completed";
   paymentStatus: "pending" | "paid" | "failed";
 };
