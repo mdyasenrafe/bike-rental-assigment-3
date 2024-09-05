@@ -4,7 +4,6 @@ import { UserRolesObject } from "../user/user.constant";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { RentalValidations } from "./rental.validation";
 import { RentalControllers } from "./rental.controller";
-import bodyParser from "body-parser";
 
 const router = express.Router();
 
