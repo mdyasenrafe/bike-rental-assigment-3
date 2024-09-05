@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { TRental } from "./rental.interace";
+import { PaymentStatuses, RentalStatuses } from "./rental.constant";
 
 const rentalSchema = new Schema<TRental>(
   {
@@ -25,12 +26,12 @@ const rentalSchema = new Schema<TRental>(
     },
     status: {
       type: String,
-      enum: ["booked", "returned"],
+      enum: RentalStatuses,
       default: "booked",
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: PaymentStatuses,
       default: "pending",
     },
   },

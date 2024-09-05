@@ -33,35 +33,6 @@ const getUserRentals = catchAsync(async (req, res) => {
   });
 });
 
-export const handleStripeWebhook = catchAsync(async (req, res) => {
-  const event = RentalServices.verifyStripeWebhookSignature(req);
-
-  switch (event.type) {
-    case "payment_intent.succeeded": {
-      const paymentIntent = event.data.object;
-      await updateRentalPaymentStatus({
-        paymentIntentId: paymentIntent.id,
-        status: "succeeded",
-      });
-      break;
-    }
-
-    case "payment_intent.payment_failed": {
-      const paymentIntent = event.data.object;
-      await updateRentalPaymentStatus({
-        paymentIntentId: paymentIntent.id,
-        status: "failed",
-      });
-      break;
-    }
-
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
-  }
-
-  sendResponse(res, { message: "Webhook received successfully", data: "" });
-});
-
 export const RentalControllers = {
   createRental,
   ReturnBike,

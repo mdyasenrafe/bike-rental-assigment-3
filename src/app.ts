@@ -4,8 +4,15 @@ import bodyParser from "body-parser";
 import router from "./app/routes";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler";
 import notFoundRoute from "./app/middlewares/notFoundRoute";
+import { paymentControllers } from "./app/modules/payment/payment.controller";
 
 const app: Application = express();
+
+app.use(
+  "/webhooks/stripe",
+  express.raw({ type: "application/json" }),
+  paymentControllers.handleStripeWebhook
+);
 
 app.use(cors());
 app.use(express.json({ limit: "25mb" }));
