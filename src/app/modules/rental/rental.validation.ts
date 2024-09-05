@@ -5,8 +5,8 @@ const rentalCreateSchema = z.object({
   startTime: z
     .string()
     .transform((dateString) => new Date(dateString))
-    .refine((date) => date <= new Date(), {
-      message: "Start time must be a valid past or current date",
+    .refine((date) => date >= new Date(), {
+      message: "Start time must be a valid future or current date",
     }),
 });
 
