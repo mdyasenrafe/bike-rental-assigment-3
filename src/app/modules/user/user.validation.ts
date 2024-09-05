@@ -7,7 +7,7 @@ const userUpdateSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters long")
     .optional(),
-  phone: z.string().length(10, "Phone must be 10 digits").optional(),
+  phone: z.string().length(11, "Phone must be 10 digits").optional(),
   address: z
     .string()
     .min(5, "Address must be at least 5 characters long")
