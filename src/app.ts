@@ -9,7 +9,7 @@ import { paymentControllers } from "./app/modules/payment/payment.controller";
 const app: Application = express();
 
 app.use(
-  "/webhooks/stripe",
+  "/api/webhooks/stripe",
   express.raw({ type: "application/json" }),
   paymentControllers.handleStripeWebhook
 );
