@@ -2,12 +2,9 @@ import { stripe } from "../../config";
 
 export const verifyStripeWebhookSignature = (req: any) => {
   const sig = req.headers["stripe-signature"] as string;
-  console.log(
-    "process.env.STRIPE_WEBHOOK_SECRET",
-    process.env.STRIPE_WEBHOOK_SECRET
-  );
+  console.log(req.body);
   const event = stripe.webhooks.constructEvent(
-    req.rawBody,
+    req.body,
     sig,
     process.env.STRIPE_WEBHOOK_SECRET!
   );
