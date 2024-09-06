@@ -59,7 +59,7 @@ const deleteBikeFromDB = async (id: string) => {
 };
 
 const getBikeModelsFromDB = async () => {
-  const bikeModels = await BikeModel.find({}, "model");
+  const bikeModels = await BikeModel.find({});
   const uniqueModels = Array.from(
     new Set(bikeModels.map((bike) => bike.model))
   );
@@ -69,13 +69,14 @@ const getBikeModelsFromDB = async () => {
 };
 
 const getBikeBrandFromDB = async () => {
-  const bikeModels = await BikeModel.find({}, "brand");
-  const uniqueModels = Array.from(
-    new Set(bikeModels.map((bike) => bike.model))
+  const bikeModels = await BikeModel.find({});
+
+  const uniqueBrands = Array.from(
+    new Set(bikeModels.map((bike) => bike.brand))
   );
 
-  const formattedModels = uniqueModels.map((model) => ({ model }));
-  return formattedModels;
+  const formattedBrands = uniqueBrands.map((brand) => ({ brand }));
+  return formattedBrands;
 };
 
 export const BikeServices = {
