@@ -16,7 +16,7 @@ router.post(
 router.get(
   "/",
   (req, res, next) => {
-    const price: any = req.query.price;
+    const price: any = req.query.pricePerHour;
     console.log("Received query parameters:", req.query);
     if (price) {
       if (price["gte"] && isNaN(Number(price["gte"]))) {
