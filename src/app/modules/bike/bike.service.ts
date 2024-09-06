@@ -11,7 +11,7 @@ const createBikeIntoDB = async (payload: TBike) => {
 };
 
 const getAllBikesFromDB = async (query: Record<string, unknown>) => {
-  const searchableFields = ["name"];
+  const searchableFields = ["name", "model"];
   const academicDepartmentQuery = new QueryBuilder(BikeModel.find(), query)
     .search(searchableFields)
     .filter()

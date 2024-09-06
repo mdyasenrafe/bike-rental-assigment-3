@@ -32,14 +32,14 @@ class QueryBuilder<T> {
     excludeFields.forEach((el) => delete queryObj[el]);
 
     // Handle range filters like price or rating
-    if (this.query.price) {
-      const priceQuery = this.query.price as Record<string, unknown>;
+    if (this.query.pricePerHour) {
+      const priceQuery = this.query.pricePerHour as Record<string, unknown>;
       queryObj.price = {};
       if (priceQuery["gte"]) {
-        queryObj.price.$gte = Number(priceQuery["gte"]);
+        queryObj.pricePerHour.$gte = Number(priceQuery["gte"]);
       }
       if (priceQuery["lte"]) {
-        queryObj.price.$lte = Number(priceQuery["lte"]);
+        queryObj.pricePerHour.$lte = Number(priceQuery["lte"]);
       }
     }
 
