@@ -33,6 +33,7 @@ router.get(
 );
 router.get("/:id", BikeControllers.getBikeById);
 router.get("/bike-models", BikeControllers.getAllBikeModels);
+router.get("/bike-brands", BikeControllers.getAllBikeBrand);
 router.put(
   "/:id",
   authenticateToken(UserRolesObject.admin),

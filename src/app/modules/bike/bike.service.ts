@@ -68,6 +68,16 @@ const getBikeModelsFromDB = async () => {
   return formattedModels;
 };
 
+const getBikeBrandFromDB = async () => {
+  const bikeModels = await BikeModel.find({}, "brand");
+  const uniqueModels = Array.from(
+    new Set(bikeModels.map((bike) => bike.model))
+  );
+
+  const formattedModels = uniqueModels.map((model) => ({ model }));
+  return formattedModels;
+};
+
 export const BikeServices = {
   createBikeIntoDB,
   getAllBikesFromDB,
@@ -75,4 +85,5 @@ export const BikeServices = {
   deleteBikeFromDB,
   getBikeModelsFromDB,
   getBikeByIdFromDB,
+  getBikeBrandFromDB,
 };
