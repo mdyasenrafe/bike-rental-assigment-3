@@ -34,7 +34,7 @@ class QueryBuilder<T> {
     // Handle range filters like price or rating
     if (this.query.pricePerHour) {
       const priceQuery = this.query.pricePerHour as Record<string, unknown>;
-      queryObj.price = {};
+      queryObj.pricePerHour = {};
       if (priceQuery["gte"]) {
         queryObj.pricePerHour.$gte = Number(priceQuery["gte"]);
       }
