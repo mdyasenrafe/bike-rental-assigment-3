@@ -9,3 +9,5 @@ export type TBike = {
   brand: string;
   thumb: string;
 };
+
+export type OptionType = { value: string; label: string };

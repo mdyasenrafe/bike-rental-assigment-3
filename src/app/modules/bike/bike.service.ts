@@ -1,5 +1,5 @@
 import { Types } from "mongoose";
-import { TBike } from "./bike.interface";
+import { OptionType, TBike } from "./bike.interface";
 import { BikeModel } from "./bike.model";
 import { AppError } from "../../errors/appError";
 import httpStatus from "http-status";
@@ -58,24 +58,34 @@ const deleteBikeFromDB = async (id: string) => {
   return result;
 };
 
-const getBikeModelsFromDB = async () => {
+const getBikeModelsFromDB = async (): Promise<OptionType[]> => {
   const bikeModels = await BikeModel.find({});
   const uniqueModels = Array.from(
     new Set(bikeModels.map((bike) => bike.model))
   );
 
-  const formattedModels = uniqueModels.map((model) => model);
+  const formattedModels: OptionType[] = uniqueModels.map((model) => {
+    return {
+      value: model,
+      label: model,
+    };
+  });
   return formattedModels;
 };
 
-const getBikeBrandFromDB = async () => {
+const getBikeBrandFromDB = async (): Promise<OptionType[]> => {
   const bikeModels = await BikeModel.find({});
 
   const uniqueBrands = Array.from(
     new Set(bikeModels.map((bike) => bike.brand))
   );
 
-  const formattedBrands = uniqueBrands.map((brand) => brand);
+  const formattedBrands = uniqueBrands.map((brand) => {
+    return {
+      value: brand,
+      label: brand,
+    };
+  });
   return formattedBrands;
 };
 
