@@ -64,7 +64,7 @@ const getBikeModelsFromDB = async () => {
     new Set(bikeModels.map((bike) => bike.model))
   );
 
-  const formattedModels = uniqueModels.map((model) => ({ model }));
+  const formattedModels = uniqueModels.map((model) => model);
   return formattedModels;
 };
 
@@ -75,7 +75,7 @@ const getBikeBrandFromDB = async () => {
     new Set(bikeModels.map((bike) => bike.brand))
   );
 
-  const formattedBrands = uniqueBrands.map((brand) => ({ brand }));
+  const formattedBrands = uniqueBrands.map((brand) => brand);
   return formattedBrands;
 };
 
