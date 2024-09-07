@@ -50,9 +50,20 @@ const calculateRentalCost = catchAsync(async (req, res) => {
   });
 });
 
+const completeRental = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await RentalServices.completeRentalInDB(id);
+  sendResponse(res, {
+    data: result?.rental,
+    clientSecret: result?.clientSecret as string,
+    message: "Rental completed successfully with final payment",
+  });
+});
+
 export const RentalControllers = {
   createRental,
   getUserRentals,
   getAllRentals,
   calculateRentalCost,
+  completeRental,
 };

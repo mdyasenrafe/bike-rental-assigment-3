@@ -28,5 +28,10 @@ router.get(
   authenticateToken(UserRolesObject.admin),
   RentalControllers.getAllRentals
 );
+router.get(
+  "/complete-rental",
+  authenticateToken(UserRolesObject.user, UserRolesObject.admin),
+  RentalControllers.completeRental
+);
 
 export const RentalRoutes = router;
