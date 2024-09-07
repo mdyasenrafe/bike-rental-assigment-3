@@ -28,7 +28,7 @@ router.put(
   authenticateToken(UserRolesObject.admin),
   RentalControllers.calculateRentalCost
 );
-router.put(
+router.get(
   "/get-all-rentals",
   authenticateToken(UserRolesObject.admin),
   RentalControllers.getAllRentals
