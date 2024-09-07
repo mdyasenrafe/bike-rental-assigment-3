@@ -44,7 +44,7 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
 
   const result = await usersQuery.modelQuery;
   const meta = await usersQuery.countTotal();
-
+  console.log("meta", meta);
   return {
     meta,
     result,
