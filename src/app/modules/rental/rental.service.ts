@@ -43,19 +43,6 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
       { session }
     );
 
-    // Update bike availability
-    const updateBikeAvailable = await BikeModel.findOneAndUpdate(
-      { _id: bikeId },
-      { isAvailable: false },
-      { new: true, session }
-    );
-    if (!updateBikeAvailable) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Unable to update: The bike with the specified ID does not exist or cannot be updated."
-      );
-    }
-
     await session.commitTransaction();
     await session.endSession();
 
@@ -179,19 +166,17 @@ const updateRentalPaymentStatus = async ({
     throw new AppError(httpStatus.NOT_FOUND, "No Data Found");
   }
 
-  if (status === "failed") {
-    const bikeUpdate = await BikeModel.findByIdAndUpdate(
-      rental.bikeId,
-      { isAvailable: true },
-      { new: true }
-    );
+  const bikeUpdate = await BikeModel.findByIdAndUpdate(
+    rental.bikeId,
+    { isAvailable: status == "failed" ? false : true },
+    { new: true }
+  );
 
-    if (!bikeUpdate) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Failed to update bike availability"
-      );
-    }
+  if (!bikeUpdate) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Failed to update bike availability"
+    );
   }
 
   return rental;
