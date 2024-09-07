@@ -13,11 +13,6 @@ router.post(
   validateRequest(RentalValidations.rentalCreateSchema),
   RentalControllers.createRental
 );
-router.put(
-  "/:id/return",
-  authenticateToken(UserRolesObject.admin),
-  RentalControllers.ReturnBike
-);
 router.get(
   "/",
   authenticateToken(UserRolesObject.admin, UserRolesObject.user),

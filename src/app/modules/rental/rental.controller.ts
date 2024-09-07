@@ -15,15 +15,6 @@ const createRental = catchAsync(async (req, res) => {
   });
 });
 
-const ReturnBike = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await RentalServices.returnBikeToDB(id);
-  sendResponse(res, {
-    data: result,
-    message: "Bike returned successfully",
-  });
-});
-
 const getUserRentals = catchAsync(async (req, res) => {
   const userId = req?.user?.userId;
   const { result, meta } = await RentalServices.getRentalsByUserFRomDb(
@@ -61,7 +52,6 @@ const calculateRentalCost = catchAsync(async (req, res) => {
 
 export const RentalControllers = {
   createRental,
-  ReturnBike,
   getUserRentals,
   getAllRentals,
   calculateRentalCost,
