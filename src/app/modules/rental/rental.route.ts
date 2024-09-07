@@ -23,5 +23,15 @@ router.get(
   authenticateToken(UserRolesObject.admin, UserRolesObject.user),
   RentalControllers.getUserRentals
 );
+router.put(
+  "/:id/calculate",
+  authenticateToken(UserRolesObject.admin),
+  RentalControllers.calculateRentalCost
+);
+router.put(
+  "/get-all-rentals",
+  authenticateToken(UserRolesObject.admin),
+  RentalControllers.getAllRentals
+);
 
 export const RentalRoutes = router;

@@ -197,9 +197,101 @@ const updateRentalPaymentStatus = async ({
   return rental;
 };
 
+const calculateRentalCost = async (id: string, endTime: Date) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    const rental = await RentalModel.findById(id)
+      .populate<{ bikeId: TBike }>("bikeId")
+      .session(session);
+
+    if (!rental) {
+      throw new AppError(httpStatus.NOT_FOUND, "Rental not found");
+    }
+
+    if (rental.isReturned) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Bike is already returned");
+    }
+
+    const startTime = new Date(rental.startTime);
+
+    // Calculate the duration in hours
+    const duration =
+      (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
+    let totalCost = duration * rental.bikeId.pricePerHour;
+    totalCost = Math.ceil(totalCost * 100) / 100; // Round to 2 decimal places
+
+    const updatePayload = {
+      returnTime: endTime,
+      totalCost: totalCost,
+      status: "returned", // Update status to "returned"
+      isReturned: true, // Mark as returned
+    };
+
+    // Update the rental record
+    const updatedRental = await RentalModel.findByIdAndUpdate(
+      id,
+      updatePayload,
+      {
+        new: true,
+        session,
+      }
+    );
+
+    if (!updatedRental) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to update rental");
+    }
+
+    // Update the bike availability
+    const bikeUpdate = await BikeModel.findByIdAndUpdate(
+      rental.bikeId,
+      { isAvailable: true }, // Make the bike available again
+      { new: true, session }
+    );
+
+    if (!bikeUpdate) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Failed to update bike availability"
+      );
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return updatedRental;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, error.message);
+  }
+};
+
+const getAllRentalsFromDB = async (query: Record<string, unknown>) => {
+  const rentalsQuery = new QueryBuilder(
+    RentalModel.find().populate("userId").populate("bikeId"),
+    query
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await rentalsQuery.modelQuery;
+  const meta = await rentalsQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
+
 export const RentalServices = {
   createRentalIntoDB,
   returnBikeToDB,
   getRentalsByUserFRomDb,
   updateRentalPaymentStatus,
+  calculateRentalCost,
+  getAllRentalsFromDB,
 };

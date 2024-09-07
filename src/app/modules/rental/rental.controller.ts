@@ -37,8 +37,32 @@ const getUserRentals = catchAsync(async (req, res) => {
   });
 });
 
+const getAllRentals = catchAsync(async (req, res) => {
+  const { result, meta } = await RentalServices.getAllRentalsFromDB(req?.query);
+  sendResponse(res, {
+    data: result,
+    meta: meta,
+    message: "Rentals retrieved successfully",
+  });
+});
+
+const calculateRentalCost = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { endTime } = req.body;
+  const result = await RentalServices.calculateRentalCost(
+    id,
+    new Date(endTime)
+  );
+  sendResponse(res, {
+    data: result,
+    message: "Rental cost calculated successfully, bike is available.",
+  });
+});
+
 export const RentalControllers = {
   createRental,
   ReturnBike,
   getUserRentals,
+  getAllRentals,
+  calculateRentalCost,
 };
