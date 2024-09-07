@@ -21,6 +21,7 @@ const updateProfile = catchAsync(async (req, res) => {
 });
 const getAllUsers = catchAsync(async (req, res) => {
   const { result, meta } = await Userservices.getAllUsersFromDB(req.query);
+  console.log(meta);
   sendResponse(res, {
     message: "get users fetched successfully",
     data: result,
