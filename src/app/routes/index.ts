@@ -3,10 +3,15 @@ import { AuthRoutes } from "../modules/auth/auth.route";
 import { userRoutes } from "../modules/user/user.route";
 import { RentalRoutes } from "../modules/rental/rental.route";
 import { bikeRoutes } from "../modules/bike/bike.route";
+import { uploadRoutes } from "../modules/upload/upload.route";
 
 const router = Router();
 
 const modulesRoutes = [
+  {
+    path: "/upload",
+    route: uploadRoutes,
+  },
   {
     path: "/auth",
     route: AuthRoutes,

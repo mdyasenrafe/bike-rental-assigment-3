@@ -9,6 +9,7 @@ export default {
   db_password: process.env.DB_PASSWORD,
   db_name: process.env.DB_NAME,
   access_token_secret: process.env.ACCESS_TOKEN_SECRET,
+  imgbb_api_key: process.env.IMGBB_API_KEY,
 };
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
