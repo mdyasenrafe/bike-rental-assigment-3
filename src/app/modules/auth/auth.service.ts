@@ -27,6 +27,11 @@ const signinUser = async (email: string, password: string) => {
   if (!isMatch) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid credentials");
   }
+
+  if (user.status === "deleted") {
+    throw new AppError(httpStatus.FORBIDDEN, "User account has been deleted");
+  }
+
   const token = generateToken(user._id, user.role);
   return { data: user, token };
 };
