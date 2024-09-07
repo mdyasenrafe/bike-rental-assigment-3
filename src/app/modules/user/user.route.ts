@@ -18,5 +18,10 @@ router.put(
   validateRequest(UserValidations.userUpdateSchema),
   UserControllers.updateProfile
 );
+router.get(
+  "/",
+  authenticateToken(UserRolesObject.admin),
+  UserControllers.getAllUsers
+);
 
 export const userRoutes = router;

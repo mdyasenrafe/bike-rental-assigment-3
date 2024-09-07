@@ -5,6 +5,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { AppError } from "../../errors/appError";
 import httpStatus from "http-status";
 import bcrypt from "bcrypt";
+import QueryBuilder from "../../builder/QueryBuilder";
 
 const getUserFromDB = async (id: Types.ObjectId) => {
   const result = await UserModel.findById(id);
@@ -32,7 +33,26 @@ const updateUserIntoDB = async (
   return result;
 };
 
+const getAllUsersFromDB = async (query: Record<string, unknown>) => {
+  const searchableFields = ["name", "model"];
+  const usersQuery = new QueryBuilder(UserModel.find({ role: "user" }), query)
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await usersQuery.modelQuery;
+  const meta = await usersQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
+
 export const Userservices = {
   getUserFromDB,
   updateUserIntoDB,
+  getAllUsersFromDB,
 };
