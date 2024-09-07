@@ -205,7 +205,7 @@ const updateRentalPaymentStatus = async ({
     }
 
     if (paymentIntentId !== rental.finalPaymentIntentId) {
-      const isAvailable = status === "failed" ? false : true;
+      const isAvailable = status === "failed" ? true : false;
       await BikeModel.findByIdAndUpdate(
         rental.bikeId,
         { isAvailable },
