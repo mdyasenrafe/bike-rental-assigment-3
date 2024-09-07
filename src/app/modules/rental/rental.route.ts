@@ -27,7 +27,7 @@ router.put(
 );
 
 router.get(
-  "/complete-rental",
+  "/:id/complete-rental",
   authenticateToken(UserRolesObject.user, UserRolesObject.admin),
   RentalControllers.completeRental
 );
