@@ -24,5 +24,6 @@ export const sendResponse = <T>(res: Response, data: TResponse<T>) => {
     token: data.token,
     data: data.data,
     clientSecret: data.clientSecret,
+    meta: data?.meta,
   });
 };
