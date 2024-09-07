@@ -13,25 +13,29 @@ router.post(
   validateRequest(RentalValidations.rentalCreateSchema),
   RentalControllers.createRental
 );
+
 router.get(
   "/",
-  authenticateToken(UserRolesObject.admin, UserRolesObject.user),
+  authenticateToken(UserRolesObject.user, UserRolesObject.admin),
   RentalControllers.getUserRentals
 );
+
 router.put(
   "/:id/calculate",
   authenticateToken(UserRolesObject.admin),
   RentalControllers.calculateRentalCost
 );
-router.get(
-  "/get-all-rentals",
-  authenticateToken(UserRolesObject.admin),
-  RentalControllers.getAllRentals
-);
+
 router.get(
   "/complete-rental",
   authenticateToken(UserRolesObject.user, UserRolesObject.admin),
   RentalControllers.completeRental
+);
+
+router.get(
+  "/get-all-rentals",
+  authenticateToken(UserRolesObject.admin),
+  RentalControllers.getAllRentals
 );
 
 export const RentalRoutes = router;

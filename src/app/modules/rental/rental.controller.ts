@@ -15,28 +15,6 @@ const createRental = catchAsync(async (req, res) => {
   });
 });
 
-const getUserRentals = catchAsync(async (req, res) => {
-  const userId = req?.user?.userId;
-  const { result, meta } = await RentalServices.getRentalsByUserFRomDb(
-    req?.query,
-    userId
-  );
-  sendResponse(res, {
-    data: result,
-    meta: meta,
-    message: "Rentals retrieved successfully",
-  });
-});
-
-const getAllRentals = catchAsync(async (req, res) => {
-  const { result, meta } = await RentalServices.getAllRentalsFromDB(req?.query);
-  sendResponse(res, {
-    data: result,
-    meta: meta,
-    message: "Rentals retrieved successfully",
-  });
-});
-
 const calculateRentalCost = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { endTime } = req.body;
@@ -60,10 +38,32 @@ const completeRental = catchAsync(async (req, res) => {
   });
 });
 
+const getUserRentals = catchAsync(async (req, res) => {
+  const userId = req?.user?.userId;
+  const { result, meta } = await RentalServices.getRentalsByUserFRomDb(
+    req?.query,
+    userId
+  );
+  sendResponse(res, {
+    data: result,
+    meta: meta,
+    message: "Rentals retrieved successfully",
+  });
+});
+
+const getAllRentals = catchAsync(async (req, res) => {
+  const { result, meta } = await RentalServices.getAllRentalsFromDB(req?.query);
+  sendResponse(res, {
+    data: result,
+    meta: meta,
+    message: "Rentals retrieved successfully",
+  });
+});
+
 export const RentalControllers = {
   createRental,
-  getUserRentals,
-  getAllRentals,
   calculateRentalCost,
   completeRental,
+  getUserRentals,
+  getAllRentals,
 };

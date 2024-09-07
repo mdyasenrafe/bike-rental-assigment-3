@@ -24,7 +24,6 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
       throw new AppError(httpStatus.NOT_FOUND, "Bike is not available");
     }
 
-    // Create a PaymentIntent for the advance payment (100 Taka)
     const advancePaymentIntent = await stripe.paymentIntents.create({
       amount: 100 * 100,
       currency: "bdt",
@@ -57,93 +56,6 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
   }
 };
 
-const getRentalsByUserFRomDb = async (
-  query: Record<string, unknown>,
-  userId: string
-) => {
-  const rentalsQuery = new QueryBuilder(
-    RentalModel.find({ userId: userId }).populate("userId").populate("bikeId"),
-    query
-  )
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
-
-  const result = await rentalsQuery.modelQuery;
-  const meta = await rentalsQuery.countTotal();
-
-  return {
-    meta,
-    result,
-  };
-};
-
-const updateRentalPaymentStatus = async ({
-  paymentIntentId,
-  status,
-}: TRentalStatusUpdate) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const rental = await RentalModel.findOne({
-      $or: [
-        { advancePaymentIntentId: paymentIntentId },
-        { finalPaymentIntentId: paymentIntentId },
-      ],
-    }).session(session);
-
-    if (!rental) {
-      throw new AppError(httpStatus.NOT_FOUND, "No Rental Found");
-    }
-
-    const updatePayload: Partial<TRental> = {};
-
-    if (rental.advancePaymentIntentId === paymentIntentId) {
-      updatePayload.advancePaymentStatus =
-        status === "succeeded" ? "paid" : "failed";
-      updatePayload.status = status === "succeeded" ? "completed" : "returned";
-    }
-
-    if (rental.finalPaymentIntentId === paymentIntentId) {
-      updatePayload.finalPaymentStatus =
-        status === "succeeded" ? "paid" : "failed";
-    }
-
-    if (paymentIntentId !== rental.finalPaymentIntentId) {
-      const isAvailable = status === "failed" ? false : true;
-      await BikeModel.findByIdAndUpdate(
-        rental.bikeId,
-        { isAvailable },
-        { new: true, session }
-      );
-    }
-
-    const updatedRental = await RentalModel.findByIdAndUpdate(
-      rental._id,
-      updatePayload,
-      { new: true, session }
-    );
-
-    if (!updatedRental) {
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "Failed to update rental record"
-      );
-    }
-
-    await session.commitTransaction();
-    await session.endSession(); // End the session
-
-    return updatedRental;
-  } catch (error: any) {
-    await session.abortTransaction();
-    await session.endSession();
-
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
-  }
-};
-
 const calculateRentalCost = async (id: string, endTime: Date) => {
   const session = await mongoose.startSession();
   try {
@@ -163,7 +75,6 @@ const calculateRentalCost = async (id: string, endTime: Date) => {
 
     const startTime = new Date(rental.startTime);
 
-    // Calculate the duration in hours and the total cost
     const duration =
       (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
     let totalCost = duration * rental.bikeId.pricePerHour;
@@ -186,10 +97,9 @@ const calculateRentalCost = async (id: string, endTime: Date) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to update rental");
     }
 
-    // Update the bike availability
     const bikeUpdate = await BikeModel.findByIdAndUpdate(
       rental.bikeId,
-      { isAvailable: true }, // Make the bike available again
+      { isAvailable: true },
       { new: true, session }
     );
 
@@ -262,6 +172,91 @@ const completeRentalInDB = async (id: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, error);
   }
 };
+const updateRentalPaymentStatus = async ({
+  paymentIntentId,
+  status,
+}: TRentalStatusUpdate) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const rental = await RentalModel.findOne({
+      $or: [
+        { advancePaymentIntentId: paymentIntentId },
+        { finalPaymentIntentId: paymentIntentId },
+      ],
+    }).session(session);
+
+    if (!rental) {
+      throw new AppError(httpStatus.NOT_FOUND, "No Rental Found");
+    }
+
+    const updatePayload: Partial<TRental> = {};
+
+    if (rental.advancePaymentIntentId === paymentIntentId) {
+      updatePayload.advancePaymentStatus =
+        status === "succeeded" ? "paid" : "failed";
+      updatePayload.status = status === "succeeded" ? "completed" : "returned";
+    }
+
+    if (rental.finalPaymentIntentId === paymentIntentId) {
+      updatePayload.finalPaymentStatus =
+        status === "succeeded" ? "paid" : "failed";
+    }
+
+    if (paymentIntentId !== rental.finalPaymentIntentId) {
+      const isAvailable = status === "failed" ? false : true;
+      await BikeModel.findByIdAndUpdate(
+        rental.bikeId,
+        { isAvailable },
+        { new: true, session }
+      );
+    }
+
+    const updatedRental = await RentalModel.findByIdAndUpdate(
+      rental._id,
+      updatePayload,
+      { new: true, session }
+    );
+
+    if (!updatedRental) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Failed to update rental record"
+      );
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return updatedRental;
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
+const getRentalsByUserFRomDb = async (
+  query: Record<string, unknown>,
+  userId: string
+) => {
+  const rentalsQuery = new QueryBuilder(
+    RentalModel.find({ userId: userId }).populate("userId").populate("bikeId"),
+    query
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await rentalsQuery.modelQuery;
+  const meta = await rentalsQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
 
 const getAllRentalsFromDB = async (query: Record<string, unknown>) => {
   const rentalsQuery = new QueryBuilder(
@@ -284,9 +279,9 @@ const getAllRentalsFromDB = async (query: Record<string, unknown>) => {
 
 export const RentalServices = {
   createRentalIntoDB,
-  getRentalsByUserFRomDb,
   updateRentalPaymentStatus,
   calculateRentalCost,
-  getAllRentalsFromDB,
   completeRentalInDB,
+  getRentalsByUserFRomDb,
+  getAllRentalsFromDB,
 };
