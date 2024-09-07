@@ -10,6 +10,16 @@ const rentalCreateSchema = z.object({
     }),
 });
 
+const calculateRentalCostSchema = z.object({
+  endTime: z
+    .string()
+    .transform((dateString) => new Date(dateString))
+    .refine((date) => !isNaN(date.getTime()), {
+      message: "End time must be a valid date",
+    }),
+});
+
 export const RentalValidations = {
   rentalCreateSchema,
+  calculateRentalCostSchema,
 };

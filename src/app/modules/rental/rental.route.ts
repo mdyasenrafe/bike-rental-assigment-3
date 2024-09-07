@@ -23,6 +23,7 @@ router.get(
 router.put(
   "/:id/calculate",
   authenticateToken(UserRolesObject.admin),
+  validateRequest(RentalValidations.rentalCreateSchema),
   RentalControllers.calculateRentalCost
 );
 
