@@ -54,7 +54,11 @@ const deleteBikeFromDB = async (id: string) => {
       "Bike not found: The bike with the specified ID does not exist."
     );
   }
-  const result = await BikeModel.findOneAndDelete({ _id: id });
+  const result = await BikeModel.findOneAndUpdate(
+    { _id: id },
+    { status: "inactive" },
+    { new: true }
+  );
   return result;
 };
 

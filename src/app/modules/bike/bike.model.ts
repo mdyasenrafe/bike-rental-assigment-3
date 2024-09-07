@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { TBike } from "./bike.interface";
+import { BikeStatusArray } from "./bike.constant";
 
 const bikeSchema = new Schema<TBike>(
   {
@@ -38,6 +39,11 @@ const bikeSchema = new Schema<TBike>(
     year: {
       type: Number,
       required: true,
+    },
+    status: {
+      type: String,
+      default: "active",
+      enum: BikeStatusArray,
     },
   },
   {

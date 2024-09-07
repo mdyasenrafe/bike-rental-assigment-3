@@ -8,6 +8,7 @@ export type TBike = {
   model: string;
   brand: string;
   thumb: string;
+  status: "active" | "inactive";
 };
 
 export type OptionType = { value: string; label: string };
