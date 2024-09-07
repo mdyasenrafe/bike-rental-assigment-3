@@ -28,8 +28,28 @@ const getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
+const updateUserRole = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await Userservices.updateUserRoleInDB(id);
+  sendResponse(res, {
+    message: "User role updated successfully",
+    data: result,
+  });
+});
+
+const deleteUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await Userservices.deleteUserFromDB(id);
+  sendResponse(res, {
+    message: "User deleted successfully",
+    data: null,
+  });
+});
+
 export const UserControllers = {
   getProfile,
   updateProfile,
   getAllUsers,
+  updateUserRole,
+  deleteUser,
 };

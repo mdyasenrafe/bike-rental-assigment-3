@@ -51,8 +51,40 @@ const getAllUsersFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
+const updateUserRoleInDB = async (id: string) => {
+  const user = await UserModel.findById(id);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const result = await UserModel.findByIdAndUpdate(
+    id,
+    { role: "admin" },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  return result;
+};
+
+const deleteUserFromDB = async (id: string) => {
+  const user = await UserModel.findById(id);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+  const result = await UserModel.findByIdAndUpdate(
+    id,
+    { status: "deleted" },
+    { new: true }
+  );
+  return result;
+};
+
 export const Userservices = {
   getUserFromDB,
   updateUserIntoDB,
   getAllUsersFromDB,
+  updateUserRoleInDB,
+  deleteUserFromDB,
 };
