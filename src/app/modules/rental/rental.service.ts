@@ -226,12 +226,14 @@ const updateRentalPaymentStatus = async ({
     if (rental.advancePaymentIntentId === paymentIntentId) {
       updatePayload.advancePaymentStatus =
         status === "succeeded" ? "paid" : "failed";
-      updatePayload.status = status === "succeeded" ? "completed" : "returned";
+      updatePayload.status = "booked";
     }
 
     if (rental.finalPaymentIntentId === paymentIntentId) {
       updatePayload.finalPaymentStatus =
         status === "succeeded" ? "paid" : "failed";
+      updatePayload.status = status === "succeeded" ? "completed" : "returned";
+      updatePayload.paymentStatus = status === "succeeded" ? "paid" : "failed";
     }
 
     if (paymentIntentId !== rental.finalPaymentIntentId) {
