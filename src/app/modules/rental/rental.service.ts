@@ -6,6 +6,8 @@ import { RentalModel } from "./rental.model";
 import mongoose, { Types } from "mongoose";
 import { TBike } from "../bike/bike.interface";
 import { stripe } from "../../config";
+import { CouponModel } from "../coupon/coupon.model";
+import { roundToTwoDecimals } from "../../utils/roundToTwoDecimals";
 import QueryBuilder from "../../builder/QueryBuilder";
 
 const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
@@ -24,8 +26,9 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
       throw new AppError(httpStatus.NOT_FOUND, "Bike is not available");
     }
 
+    // Create a PaymentIntent for the advance payment (100 Taka)
     const advancePaymentIntent = await stripe.paymentIntents.create({
-      amount: 100 * 100,
+      amount: 100 * 100, // Convert Taka to cents
       currency: "bdt",
       payment_method_types: ["card"],
     });
@@ -75,10 +78,11 @@ const calculateRentalCost = async (id: string, endTime: Date) => {
 
     const startTime = new Date(rental.startTime);
 
+    // Calculate the duration in hours and the total cost
     const duration =
       (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
     let totalCost = duration * rental.bikeId.pricePerHour;
-    totalCost = Math.ceil(totalCost * 100) / 100;
+    totalCost = roundToTwoDecimals(totalCost);
 
     const updatePayload = {
       returnTime: endTime,
@@ -97,9 +101,10 @@ const calculateRentalCost = async (id: string, endTime: Date) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to update rental");
     }
 
+    // Update the bike availability
     const bikeUpdate = await BikeModel.findByIdAndUpdate(
       rental.bikeId,
-      { isAvailable: true },
+      { isAvailable: true }, // Make the bike available again
       { new: true, session }
     );
 
@@ -121,7 +126,7 @@ const calculateRentalCost = async (id: string, endTime: Date) => {
   }
 };
 
-const completeRentalInDB = async (id: string) => {
+const completeRentalInDB = async (id: string, couponCode?: string) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -132,7 +137,7 @@ const completeRentalInDB = async (id: string) => {
       .session(session);
 
     if (!rental) {
-      throw new AppError(httpStatus.NOT_FOUND, "No Data Found");
+      throw new AppError(httpStatus.NOT_FOUND, "No Rental Found");
     }
 
     if (!rental.totalCost || rental.totalCost <= 100) {
@@ -142,7 +147,32 @@ const completeRentalInDB = async (id: string) => {
       );
     }
 
-    const finalAmount = rental.totalCost - 100;
+    let finalAmount = rental.totalCost;
+
+    let discount = 0;
+    if (couponCode) {
+      const coupon = await CouponModel.findOne({
+        code: couponCode,
+        isActive: true,
+      }).session(session);
+
+      if (!coupon) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Invalid or inactive coupon"
+        );
+      }
+
+      if (coupon.discountType === "percentage") {
+        discount = roundToTwoDecimals(
+          (finalAmount * coupon.discountValue) / 100
+        );
+      } else if (coupon.discountType === "fixed") {
+        discount = roundToTwoDecimals(coupon.discountValue);
+      }
+      finalAmount = roundToTwoDecimals(finalAmount - discount);
+      finalAmount = Math.max(0, finalAmount - 100);
+    }
 
     const finalPaymentIntent = await stripe.paymentIntents.create({
       amount: finalAmount * 100,
@@ -155,6 +185,7 @@ const completeRentalInDB = async (id: string) => {
       {
         finalPaymentIntentId: finalPaymentIntent.id,
         finalPaymentStatus: "pending",
+        totalCost: finalAmount,
       },
       { new: true, session }
     );
@@ -172,6 +203,7 @@ const completeRentalInDB = async (id: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, error);
   }
 };
+
 const updateRentalPaymentStatus = async ({
   paymentIntentId,
   status,
@@ -195,17 +227,16 @@ const updateRentalPaymentStatus = async ({
     if (rental.advancePaymentIntentId === paymentIntentId) {
       updatePayload.advancePaymentStatus =
         status === "succeeded" ? "paid" : "failed";
-      updatePayload.status = "booked";
+      updatePayload.status = status === "succeeded" ? "completed" : "returned";
     }
 
     if (rental.finalPaymentIntentId === paymentIntentId) {
       updatePayload.finalPaymentStatus =
         status === "succeeded" ? "paid" : "failed";
-      updatePayload.status = status === "succeeded" ? "completed" : "returned";
     }
 
     if (paymentIntentId !== rental.finalPaymentIntentId) {
-      const isAvailable = status === "failed" ? true : false;
+      const isAvailable = status === "failed" ? false : true;
       await BikeModel.findByIdAndUpdate(
         rental.bikeId,
         { isAvailable },
@@ -227,14 +258,34 @@ const updateRentalPaymentStatus = async ({
     }
 
     await session.commitTransaction();
-    await session.endSession();
+    await session.endSession(); // End the session
 
     return updatedRental;
   } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
+
     throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
   }
+};
+
+const getAllRentalsFromDB = async (query: Record<string, unknown>) => {
+  const rentalsQuery = new QueryBuilder(
+    RentalModel.find().populate("userId").populate("bikeId"),
+    query
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await rentalsQuery.modelQuery;
+  const meta = await rentalsQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
 };
 
 const getRentalsByUserFRomDb = async (
@@ -259,30 +310,11 @@ const getRentalsByUserFRomDb = async (
   };
 };
 
-const getAllRentalsFromDB = async (query: Record<string, unknown>) => {
-  const rentalsQuery = new QueryBuilder(
-    RentalModel.find().populate("userId").populate("bikeId"),
-    query
-  )
-    .filter()
-    .sort()
-    .paginate()
-    .fields();
-
-  const result = await rentalsQuery.modelQuery;
-  const meta = await rentalsQuery.countTotal();
-
-  return {
-    meta,
-    result,
-  };
-};
-
 export const RentalServices = {
   createRentalIntoDB,
-  updateRentalPaymentStatus,
   calculateRentalCost,
   completeRentalInDB,
-  getRentalsByUserFRomDb,
+  updateRentalPaymentStatus,
   getAllRentalsFromDB,
+  getRentalsByUserFRomDb,
 };
