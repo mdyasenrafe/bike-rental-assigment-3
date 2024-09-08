@@ -175,7 +175,7 @@ const completeRentalInDB = async (id: string, couponCode?: string) => {
     }
 
     const finalPaymentIntent = await stripe.paymentIntents.create({
-      amount: finalAmount * 100,
+      amount: roundToTwoDecimals(finalAmount * 100),
       currency: "bdt",
       payment_method_types: ["card"],
     });
