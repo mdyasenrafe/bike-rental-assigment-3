@@ -27,7 +27,9 @@ const validateCoupon = async (couponCode: string, totalAmount: number) => {
     discount = roundToTwoDecimals(coupon.discountValue);
   }
 
-  const finalAmount = roundToTwoDecimals(Math.max(0, totalAmount - discount));
+  const finalAmount = roundToTwoDecimals(
+    Math.max(0, totalAmount - discount - 100)
+  );
 
   return { discount, finalAmount };
 };
