@@ -13,6 +13,7 @@ const createCoupon = async (couponData: TCoupon) => {
 const validateCoupon = async (couponCode: string, totalAmount: number) => {
   const coupon = await CouponModel.findOne({
     code: couponCode,
+    isActive: true,
   });
 
   if (!coupon) {
