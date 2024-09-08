@@ -185,7 +185,6 @@ const completeRentalInDB = async (id: string, couponCode?: string) => {
       {
         finalPaymentIntentId: finalPaymentIntent.id,
         finalPaymentStatus: "pending",
-        totalCost: finalAmount,
       },
       { new: true, session }
     );
