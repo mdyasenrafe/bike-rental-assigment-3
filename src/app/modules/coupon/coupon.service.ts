@@ -13,11 +13,10 @@ const createCoupon = async (couponData: TCoupon) => {
 const validateCoupon = async (couponCode: string, totalAmount: number) => {
   const coupon = await CouponModel.findOne({
     code: couponCode,
-    isActive: true,
   });
 
   if (!coupon) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid or inactive coupon");
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid coupon code");
   }
 
   let discount = 0;
