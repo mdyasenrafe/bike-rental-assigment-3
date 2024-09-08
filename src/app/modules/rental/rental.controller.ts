@@ -30,7 +30,9 @@ const calculateRentalCost = catchAsync(async (req, res) => {
 
 const completeRental = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await RentalServices.completeRentalInDB(id);
+  const couponCode = req?.query?.couponCode as string;
+  console.log("couponCode", couponCode);
+  const result = await RentalServices.completeRentalInDB(id, couponCode);
   sendResponse(res, {
     data: result?.rental,
     clientSecret: result?.clientSecret as string,
