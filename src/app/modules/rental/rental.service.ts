@@ -34,7 +34,7 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
     });
 
     const bikeUpdate = await BikeModel.findByIdAndUpdate(
-      bikeId,
+      payload.bikeId,
       { isAvailable: false },
       { new: true, session }
     );
@@ -244,7 +244,7 @@ const updateRentalPaymentStatus = async ({
     }
     console.log(paymentIntentId);
     if (paymentIntentId !== rental.finalPaymentIntentId) {
-      const isAvailable = status === "failed" ? false : true;
+      const isAvailable = status === "failed" ? true : false;
       console.log("isAvailable =>", isAvailable);
       await BikeModel.findByIdAndUpdate(
         rental.bikeId,
