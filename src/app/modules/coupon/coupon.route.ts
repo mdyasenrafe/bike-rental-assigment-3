@@ -26,5 +26,10 @@ router.get(
   authenticateToken(UserRolesObject.user, UserRolesObject.admin),
   CouponControllers.getCoupons
 );
+router.delete(
+  "/:id",
+  authenticateToken(UserRolesObject.admin),
+  CouponControllers.updateCoupon
+);
 
 export const CouponRoutes = router;

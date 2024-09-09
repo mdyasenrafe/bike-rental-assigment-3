@@ -50,8 +50,22 @@ const getCouponsFromDB = async (query: Record<string, unknown>) => {
   };
 };
 
+const updateCouponToDB = async (id: string) => {
+  const coupon = await CouponModel.findOneAndUpdate(
+    {
+      _id: id,
+    },
+    {
+      isActive: false,
+    },
+    { new: true }
+  );
+  return coupon;
+};
+
 export const couponServices = {
   validateCoupon,
   createCoupon,
   getCouponsFromDB,
+  updateCouponToDB,
 };

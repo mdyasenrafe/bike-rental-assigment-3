@@ -34,9 +34,19 @@ const getCoupons = catchAsync(async (req, res) => {
     message: "Coupons retrieved successfully",
   });
 });
+const updateCoupon = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await couponServices.updateCouponToDB(id);
+
+  sendResponse(res, {
+    data: result,
+    message: "Coupons deleted successfully",
+  });
+});
 
 export const CouponControllers = {
   validateCoupon,
   createCoupon,
   getCoupons,
+  updateCoupon,
 };
