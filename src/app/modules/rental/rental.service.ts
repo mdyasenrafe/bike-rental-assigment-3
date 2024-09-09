@@ -33,6 +33,12 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
       payment_method_types: ["card"],
     });
 
+    const bikeUpdate = await BikeModel.findByIdAndUpdate(
+      bikeId,
+      { isAvailable: false },
+      { new: true, session }
+    );
+
     const rentalResult = await RentalModel.create(
       [
         {
@@ -53,6 +59,7 @@ const createRentalIntoDB = async (userId: Types.ObjectId, payload: TRental) => {
       clientSecret: advancePaymentIntent.client_secret,
     };
   } catch (error: any) {
+    console.log(error);
     await session.abortTransaction();
     await session.endSession();
     throw new AppError(httpStatus.BAD_REQUEST, error);
@@ -235,9 +242,10 @@ const updateRentalPaymentStatus = async ({
       updatePayload.status = status === "succeeded" ? "completed" : "returned";
       updatePayload.paymentStatus = status === "succeeded" ? "paid" : "failed";
     }
-
+    console.log(paymentIntentId);
     if (paymentIntentId !== rental.finalPaymentIntentId) {
       const isAvailable = status === "failed" ? false : true;
+      console.log("isAvailable =>", isAvailable);
       await BikeModel.findByIdAndUpdate(
         rental.bikeId,
         { isAvailable },
